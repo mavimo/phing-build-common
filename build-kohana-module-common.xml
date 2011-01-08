@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="kohana-module-common" basedir="." default="main">
+	<!-- Sample default - override in build.xml as needed -->
+	<target name="package-deb" depends="">
+		<copy todir="${build.dir.deb.root}/usr/share/kohana${kohana.version}/${kohana.module.name}">
+			<fileset dir="${build.dir.target}">
+				<include name="**" />
+			</fileset>
+		</copy>
+
+		<phingcall target="_package-deb" />
+	</target>
+</project>
