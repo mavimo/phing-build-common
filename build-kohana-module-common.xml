@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <project name="kohana-module-common" basedir="." default="main">
+
+	<property name="app.name" value="kohana${kohana.version}-mod-${kohana.module.name}" />
+
 	<!-- Sample default - override in build.xml as needed -->
 	<target name="package-deb" depends="">
 		<copy todir="${build.dir.deb.root}/usr/share/kohana${kohana.version}/${kohana.module.name}">
