@@ -1,4 +1,4 @@
-<project name="generic" basedir="." default="main">
+<project name="common" basedir="." default="main">
 	<property name="deb.control.builddepends" value="debhelper (>= 7.0.50~)" />
 	<property name="deb.control.depends" value="" />
 	<property name="deb.control.predepends" value="" />
@@ -28,6 +28,7 @@
 	<property name="build.dir.logs"        value="${build.dir}/logs" />
 	<property name="build.dir.target"      value="${build.dir}/target" />
 	<property name="build.dir.deb"         value="${build.dir}/deb" />
+	<property name="build.dir.deb.root"    value="${build.dir.deb}/root" />
 	<property name="build.dir.dist"        value="${build.dir}/dist" />
 	
 	<property name="deb.target" value="${build.dir.deb}" />
@@ -42,7 +43,7 @@
 		<mkdir dir="${build.dir.logs}" />
 		<mkdir dir="${build.dir.target}" />
 		<mkdir dir="${build.dir.deb}" />
-		<mkdir dir="${build.dir.deb}/root" />
+		<mkdir dir="${build.dir.deb.root}" />
 		<mkdir dir="${build.dir.dist}" />
 		<mkdir dir="${build.dir.dist}/zip" />
 		<mkdir dir="${build.dir.dist}/deb" />
@@ -84,7 +85,7 @@
 	
 	<!-- Sample default - override in build.xml as needed -->
 	<target name="package-deb" depends="">
-		<copy todir="${build.dir.deb}/root">
+		<copy todir="${build.dir.deb.root}">
 			<fileset dir="${build.dir.target}">
 				<include name="**" />
 			</fileset>
@@ -112,7 +113,7 @@
 	</target>
 
 	<target name="_package-deb" depends="prepare">
-		<copy todir="${build.dir.deb}/root/debian" overwrite="true">
+		<copy todir="${build.dir.deb.root}/debian" overwrite="true">
 			<filterchain>
 				<expandproperties/>
 			</filterchain>
@@ -124,10 +125,10 @@
 		<if>
 			<isset property="deb.signwith" />
 			<then>
-				<exec command="dpkg-buildpackage -rfakeroot -k${deb.signwith}" checkreturn="true" dir="${build.dir.deb}/root" />
+				<exec command="dpkg-buildpackage -rfakeroot -k${deb.signwith}" checkreturn="true" dir="${build.dir.deb.root}" />
 			</then>
 			<else>
-				<exec command="dpkg-buildpackage -rfakeroot -uc -us" checkreturn="true" dir="${build.dir.deb}/root" />
+				<exec command="dpkg-buildpackage -rfakeroot -uc -us" checkreturn="true" dir="${build.dir.deb.root}" />
 			</else>
 		</if>
 
