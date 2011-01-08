@@ -17,6 +17,7 @@
 	<property name="deb.distribution" value="example" />
 
 	<!-- Rarely edited stuff .. -->
+	<property name="build.type" value="0" /> <!-- 0 = Local build, 1 = Develop Build, 2 = Release/Master build. -->
 	<property name="deb.template" value="${project.basedir}/build/deb-template" />
 	<property name="deb.changelog" value="* ToDo" />
 	<property name="deb.urgency" value="low" />
@@ -35,7 +36,7 @@
 	<property name="deb.control.package" value="${app.name}" />
 	<property name="deb.control.source" value="${deb.control.package}" />
 	<property name="deb.control.description" value="${app.description}" />
-	<property name="deb.control.version" value="${build.version}" />
+<!--	<property name="deb.control.version" value="UNKNOWN" />-->
 	<property name="deb.date" value="" />
 
 	<target name="prepare">
@@ -172,10 +173,11 @@
 						<isset property="env.BUILD_NUMBER" />
 					</and>
 					<then>
-						<property name="build.version" value="${app.version}.${env.BUILD_NUMBER}" />
+						<property name="build.version" value="${app.version}-${env.GIT_BRANCH}${env.BUILD_NUMBER}" />
+						<property name="deb.control.version" value="${app.version}-${build.type}${env.GIT_BRANCH}${env.BUILD_NUMBER}" />
 					</then>
 					<else>
-						<property name="build.version" value="${app.version}" />
+						<property name="build.version" value="${app.version}-local" />
 					</else>
 				</if>
 			</else>
