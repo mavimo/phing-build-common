@@ -1,0 +1,183 @@
+<project name="generic" basedir="." default="main">
+	<property name="deb.control.builddepends" value="debhelper (>= 7.0.50~)" />
+	<property name="deb.control.depends" value="" />
+	<property name="deb.control.predepends" value="" />
+	<property name="deb.control.recommends" value="" />
+	<property name="deb.control.suggests" value="" />
+	<property name="deb.control.conflicts" value="" />
+	<property name="deb.control.provides" value="" />
+	<property name="deb.control.section" value="" />
+	<property name="deb.control.architecture" value="all" />
+
+	<!-- Always Edited Stuff -->
+	<property name="deb.control.maintainer" value="example@example.com" />
+	<property name="deb.control.homepage" value="http://www.example.com" />
+	<property name="deb.maintainer.name" value="Example" />
+	<property name="deb.maintainer.email" value="example@example.com" />
+	<property name="deb.distribution" value="example" />
+
+	<!-- Rarely edited stuff .. -->
+	<property name="deb.template" value="${project.basedir}/build/deb-template" />
+	<property name="deb.changelog" value="* ToDo" />
+	<property name="deb.urgency" value="low" />
+	<property name="deb.control.priority" value="optional" />
+	<property name="deb.control.essential" value="no" />
+
+	<!-- Even more rarely edited stuff... -->
+	<property name="build.dir"             value="${project.basedir}/build" />
+	<property name="build.dir.logs"        value="${build.dir}/logs" />
+	<property name="build.dir.target"      value="${build.dir}/target" />
+	<property name="build.dir.deb"         value="${build.dir}/deb" />
+	<property name="build.dir.out"         value="${build.dir}/out" />
+	
+	<property name="deb.target" value="${build.dir.deb}" />
+	<property name="deb.control.package" value="${app.name}" />
+	<property name="deb.control.source" value="${deb.control.package}" />
+	<property name="deb.control.description" value="${app.description}" />
+	<property name="deb.control.version" value="${build.version}" />
+	<property name="deb.date" value="" />
+
+	<target name="prepare">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir.logs}" />
+		<mkdir dir="${build.dir.target}" />
+		<mkdir dir="${build.dir.deb}" />
+		<mkdir dir="${build.dir.deb}/root" />
+		<mkdir dir="${build.dir.out}" />
+		<mkdir dir="${build.dir.out}/zip" />
+		<mkdir dir="${build.dir.out}/deb" />
+
+		<exec command="date -R" outputProperty="deb.date" />
+	</target>
+
+	<target name="_build-prepare" depends="prepare,determine-version-number">
+		<delete dir="${build.dir.target}" />
+		<delete dir="${build.dir.deb}" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir.logs}" />
+		<delete dir="${build.dir.target}" />
+		<delete dir="${build.dir.deb}" />
+		<delete dir="${build.dir.out}" />
+	</target>
+
+	<target name="ci" depends="clean,build,package">
+		
+	</target>
+
+	<!-- Sample default - override in build.xml as needed -->
+	<target name="build" depends="_build-prepare">
+		<copy todir="${build.dir.target}" overwrite="true">
+			<fileset dir="${project.basedir}">
+				<include name="**" />
+
+				<exclude name="nbproject/**" />
+				<exclude name="build/**" />
+				<exclude name="build.*" />
+				<exclude name="*.properties" />
+				<exclude name="**/.git/**" />
+				<exclude name="**/.git*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- Sample default - override in build.xml as needed -->
+	<target name="package-deb" depends="">
+		<copy todir="${build.dir.deb}/root">
+			<fileset dir="${build.dir.target}">
+				<include name="**" />
+			</fileset>
+		</copy>
+
+		<phingcall target="_package-deb" />
+	</target>
+
+	<target name="package" depends="build">
+		<phingcall target="package-zip" />
+		<phingcall target="package-deb" />
+	</target>
+
+	<!-- Sample default - override in build.xml as needed -->
+	<target name="package-zip" depends="">
+		<phingcall target="_package-zip" />
+	</target>
+
+	<target name="_package-zip" depends="prepare">
+		<zip destfile="${build.dir.out}/zip/${app.name}-${build.version}.zip" prefix="${app.name}-${build.version}/">
+			<fileset dir="${build.dir.target}">
+				<include name="**" />
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="_package-deb" depends="prepare">
+		<copy todir="${build.dir.deb}/root/debian" overwrite="true">
+			<filterchain>
+				<expandproperties/>
+			</filterchain>
+			<fileset dir="${deb.template}">
+				<include name="**" />
+			</fileset>
+		</copy>
+		
+		<if>
+			<isset property="deb.signwith" />
+			<then>
+				<exec command="dpkg-buildpackage -rfakeroot -k${deb.signwith}" checkreturn="true" dir="${build.dir.deb}/root" />
+			</then>
+			<else>
+				<exec command="dpkg-buildpackage -rfakeroot -uc -us" checkreturn="true" dir="${build.dir.deb}/root" />
+			</else>
+		</if>
+
+		<copy todir="${build.dir.out}/deb" overwrite="true">
+			<fileset dir="${build.dir.deb}">
+				<!--TODO: Get specific names here! -->
+				<include name="*.changes" />
+				<include name="*.deb" />
+				<include name="*.dsc" />
+				<include name="*.tar.gz" />
+			</fileset>
+		</copy>
+		
+		<delete>
+			<fileset dir="${build.dir.deb}">
+				<!--TODO: Get specific names here! -->
+				<include name="*.changes" />
+				<include name="*.deb" />
+				<include name="*.dsc" />
+				<include name="*.tar.gz" />
+			</fileset>
+		</delete>
+	</target>
+
+	<target name="publish-deb">
+		<phingcall target="_publish-deb" />
+	</target>
+
+	<target name="_publish-deb">
+		<!-- Warning: Fails with unsigned debs -->
+		<exec command="dupload --to ${publish.dupload.target}" checkreturn="true" dir="${build.dir.out}/deb" />
+	</target>
+
+	<target name="determine-version-number">
+		<if>
+			<isset property="build.version" />
+			<else>
+				<if>
+					<and>
+						<!-- basically - are we running inside hudson? -->
+						<isset property="env.BUILD_NUMBER" />
+					</and>
+					<then>
+						<property name="build.version" value="${app.version}.${env.BUILD_NUMBER}" />
+					</then>
+					<else>
+						<property name="build.version" value="${app.version}" />
+					</else>
+				</if>
+			</else>
+		</if>
+	</target>
+</project>

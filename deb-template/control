@@ -1,0 +1,13 @@
+Source: ${deb.control.source}
+Section: ${deb.control.section} 
+Priority: ${deb.control.priority} 
+Maintainer: ${deb.control.maintainer}
+Build-Depends: ${deb.control.builddepends}
+Standards-Version: ${deb.control.version}
+Homepage: ${deb.control.homepage}
+
+Package: ${deb.control.package}
+Provides: ${deb.control.package}
+Architecture: ${deb.control.architecture}
+Depends: ${deb.control.depends}
+Description: ${deb.control.description}

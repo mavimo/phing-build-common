@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="example" basedir="." default="main">
+	<property file="build.properties" />
+	
+	<import file="build/build-common.xml" />
+
+	<property name="app.name" value="example" />
+	<property name="app.version" value="1.0" />
+	<property name="app.description" value="Example" />
+
+	<!-- Copy and edit the build, package-deb and package-zip targets
+	     from build/build-common.xml if needed -->
+
+</project>

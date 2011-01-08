@@ -1,0 +1,15 @@
+deb.control.maintainer = info@example.com
+deb.control.homepage = http://www.example.com
+deb.maintainer.name = Example
+deb.maintainer.email = info@example.com
+deb.distribution = example
+deb.control.section = main
+deb.control.architecture = all
+deb.control.depends = 
+deb.control.builddepends = debhelper (>= 7.0.50~)
+deb.control.predepends = 
+deb.control.recommends = 
+deb.control.suggests = 
+deb.control.conflicts = 
+deb.control.provides =
+publish.dupload.target = my-dupload-target
