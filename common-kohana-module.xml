@@ -5,7 +5,7 @@
 
 	<!-- Sample default - override in build.xml as needed -->
 	<target name="package-deb" depends="">
-		<copy todir="${build.dir.deb.root}/usr/share/kohana${kohana.version}/${kohana.module.name}">
+		<copy todir="${build.dir.deb.root}/usr/share/kohana${kohana.version}/modules/${kohana.module.name}">
 			<fileset dir="${build.dir.target}">
 				<include name="**" />
 			</fileset>
