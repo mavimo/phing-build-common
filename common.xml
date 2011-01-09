@@ -173,8 +173,13 @@
 						<isset property="env.BUILD_NUMBER" />
 					</and>
 					<then>
-						<property name="build.version" value="${app.version}-${env.GIT_BRANCH}${env.BUILD_NUMBER}" />
-						<property name="deb.control.version" value="${app.version}-${build.type}${env.GIT_BRANCH}${env.BUILD_NUMBER}" />
+						<php function="str_replace" returnProperty="tmp.git_branch">
+							<param value="/" />
+							<param value="-" />
+							<param value="${env.GIT_BRANCH}" />
+						</php>
+						<property name="build.version" value="${app.version}-build${env.BUILD_NUMBER}-${tmp.git_branch}" />
+						<property name="deb.control.version" value="${app.version}-${build.type}-build${env.BUILD_NUMBER}-${tmp.git_branch}" />
 					</then>
 					<else>
 						<property name="build.version" value="${app.version}-local" />
