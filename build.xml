@@ -10,6 +10,9 @@
 	<property name="deb.control.architecture" value="all" />
 
 	<!-- Always Edited Stuff -->
+	<property name="app.name" value="example" />
+	<property name="app.version" value="1.0" />
+	<property name="app.description" value="Example" />
 	<property name="deb.control.maintainer" value="example@example.com" />
 	<property name="deb.control.homepage" value="http://www.example.com" />
 	<property name="deb.maintainer.name" value="Example" />
@@ -25,19 +28,19 @@
 	<property name="deb.control.essential" value="no" />
 
 	<!-- Even more rarely edited stuff... -->
-	<property name="build.dir"             value="${project.basedir}/build" />
-	<property name="build.dir.logs"        value="${build.dir}/logs" />
-	<property name="build.dir.target"      value="${build.dir}/target" />
-	<property name="build.dir.deb"         value="${build.dir}/deb" />
-	<property name="build.dir.deb.root"    value="${build.dir.deb}/root" />
-	<property name="build.dir.dist"        value="${build.dir}/dist" />
+	<property name="build.dir"               value="${project.basedir}/build" />
+	<property name="build.dir.logs"          value="${build.dir}/logs" />
+	<property name="build.dir.target"        value="${build.dir}/target" />
+	<property name="build.dir.deb"           value="${build.dir}/deb" />
+	<property name="build.dir.deb.root"      value="${build.dir.deb}/root" />
+	<property name="build.dir.dist"          value="${build.dir}/dist" />
 	
-	<property name="deb.target" value="${build.dir.deb}" />
-	<property name="deb.control.package" value="${app.name}" />
-	<property name="deb.control.source" value="${deb.control.package}" />
+	<property name="deb.target"              value="${build.dir.deb}" />
+	<property name="deb.control.package"     value="${app.name}" />
+	<property name="deb.control.source"      value="${deb.control.package}" />
 	<property name="deb.control.description" value="${app.description}" />
-<!--	<property name="deb.control.version" value="UNKNOWN" />-->
-	<property name="deb.date" value="" />
+	<property name="deb.control.version"     value="UNKNOWN" />
+	<property name="deb.date"                value="" />
 
 	<target name="prepare">
 		<mkdir dir="${build.dir}" />
@@ -57,55 +60,18 @@
 		<delete dir="${build.dir.deb}" />
 	</target>
 
-	<target name="clean">
+	<target name="_clean">
 		<delete dir="${build.dir.logs}" />
 		<delete dir="${build.dir.target}" />
 		<delete dir="${build.dir.deb}" />
 		<delete dir="${build.dir.dist}" />
 	</target>
 
-	<target name="ci" depends="clean,build,package">
+	<target name="_ci" depends="clean,build,package">
 		
 	</target>
 
-	<!-- Sample default - override in build.xml as needed -->
-	<target name="build" depends="_build-prepare">
-		<copy todir="${build.dir.target}" overwrite="true">
-			<fileset dir="${project.basedir}">
-				<include name="**" />
-
-				<exclude name="nbproject/**" />
-				<exclude name="build/**" />
-				<exclude name="build.*" />
-				<exclude name="*.properties" />
-				<exclude name="**/.git/**" />
-				<exclude name="**/.git*" />
-			</fileset>
-		</copy>
-	</target>
-	
-	<!-- Sample default - override in build.xml as needed -->
-	<target name="package-deb" depends="">
-		<copy todir="${build.dir.deb.root}">
-			<fileset dir="${build.dir.target}">
-				<include name="**" />
-			</fileset>
-		</copy>
-
-		<phingcall target="_package-deb" />
-	</target>
-
-	<target name="package" depends="build">
-		<phingcall target="package-zip" />
-		<phingcall target="package-deb" />
-	</target>
-
-	<!-- Sample default - override in build.xml as needed -->
-	<target name="package-zip" depends="">
-		<phingcall target="_package-zip" />
-	</target>
-
-	<target name="_package-zip" depends="prepare">
+	<target name="_package-zip" depends="">
 		<zip destfile="${build.dir.dist}/zip/${app.name}-${build.version}.zip" prefix="${app.name}-${build.version}/">
 			<fileset dir="${build.dir.target}">
 				<include name="**" />
@@ -119,7 +85,7 @@
 				<expandproperties/>
 			</filterchain>
 			<fileset dir="${deb.template}">
-				<include name="**" />
+				<include name="**" />\
 			</fileset>
 		</copy>
 		
@@ -154,11 +120,7 @@
 		</delete>
 	</target>
 
-	<target name="publish-deb">
-		<phingcall target="_publish-deb" />
-	</target>
-
-	<target name="_publish-deb">
+	<target name="_publish-deb-dupload">
 		<!-- Warning: Fails with unsigned debs -->
 		<exec command="dupload --to ${publish.dupload.target}" checkreturn="true" dir="${build.dir.dist}/deb" />
 	</target>
@@ -193,4 +155,65 @@
 			</else>
 		</if>
 	</target>
+
+	<!--
+	Targets we assume the user will override goes below..
+	-->
+	<target name="build" depends="_build-prepare">
+		<!--
+		This default assumes your files simply need to be copied to the target directory
+		e.g. $basedir/usr/bin/example where this file is $basedir/build.xml
+		-->
+		<copy todir="${build.dir.target}" overwrite="true">
+			<fileset dir="${project.basedir}">
+				<include name="**" />
+
+				<exclude name="nbproject/**" />
+				<exclude name="build/**" />
+				<exclude name="build.*" />
+				<exclude name="*.properties" />
+				<exclude name="**/.git/**" />
+				<exclude name="**/.git*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="_package" depends="build">
+		<phingcall target="package-zip" />
+	</target>
+
+	<target name="package-zip">
+		<!--
+		This default assumes the build .zip should be an exact copy of the build target.
+		-->
+		
+		<phingcall target="_package-zip" />
+	</target>
+
+	<target name="package-deb">
+		<!--
+		This example assumes your files are pre-organised into the correct folder structures..
+		e.g. $basedir/usr/bin/example where this file is $basedir/build.xml
+		-->
+		<copy todir="${build.dir.deb.root}">
+			<fileset dir="${build.dir.target}">
+				<include name="**" />
+			</fileset>
+		</copy>
+
+		<phingcall target="_package-deb" />
+	</target>
+
+	<target name="publish-deb">
+		<phingcall target="_publish-deb-dupload" />
+	</target>
+
+	<target name="ci">
+		<phingcall target="_ci" />
+	</target>
+
+	<target name="clean">
+		<phingcall target="_clean" />
+	</target>
+
 </project>

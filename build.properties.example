@@ -1,3 +1,6 @@
+app.name = example
+app.description = Example Project
+app.version = 1.0
 deb.control.maintainer = info@example.com
 deb.control.homepage = http://www.example.com
 deb.maintainer.name = Example
