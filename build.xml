@@ -21,7 +21,7 @@
 
 	<!-- Rarely edited stuff .. -->
 	<property name="build.type" value="0" /> <!-- 0 = Local build, 1 = Develop Build, 2 = Release/Master build. -->
-	<property name="deb.template" value="${project.basedir}/build/deb-template" />
+	<property name="deb.template" value="${project.basedir}/build/common/deb-template" />
 	<property name="deb.changelog" value="* ToDo" />
 	<property name="deb.urgency" value="low" />
 	<property name="deb.control.priority" value="optional" />
