@@ -145,11 +145,12 @@
 							<param value="-" />
 							<param value="${tmp.git_branch}" />
 						</php>
-						<property name="build.version" value="${app.version}-build${env.BUILD_NUMBER}-${tmp.git_branch2}" />
-						<property name="deb.control.version" value="${app.version}-${build.type}-build${env.BUILD_NUMBER}-${tmp.git_branch2}" />
+						<property name="build.version" value="${app.version}-build${env.BUILD_NUMBER}-${tmp.git_branch2}" override="true"/>
+						<property name="deb.control.version" value="${app.version}-${build.type}-build${env.BUILD_NUMBER}-${tmp.git_branch2}" override="true"/>
 					</then>
 					<else>
-						<property name="build.version" value="${app.version}-local" />
+						<property name="build.version" value="${app.version}-local"  override="true"/>
+						<property name="deb.control.version" value="${app.version}-${build.type}"  override="true"/>
 					</else>
 				</if>
 			</else>
