@@ -85,7 +85,7 @@
 				<expandproperties/>
 			</filterchain>
 			<fileset dir="${deb.template}">
-				<include name="**" />\
+				<include name="**" />
 			</fileset>
 		</copy>
 		
