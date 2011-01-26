@@ -67,7 +67,7 @@
 		<delete dir="${build.dir.dist}" />
 	</target>
 
-	<target name="_ci" depends="clean,build,package">
+	<target name="_ci" depends="build,package">
 		
 	</target>
 
